@@ -217,20 +217,16 @@ const getUserProfile = async (req, res) => {
 // ======================
 const updateProfile = async (req, res) => {
     try {
+
         const { id } = req.params;
 
-        const updateFields = {};
-
-        if (req.body.name !== undefined) updateFields.name = req.body.name;
-        if (req.body.rollNumber !== undefined) updateFields.rollNumber = req.body.rollNumber;
-        if (req.body.class !== undefined) updateFields.class = req.body.class;
-        if (req.body.department !== undefined) updateFields.department = req.body.department;
-        if (req.body.teacher !== undefined) updateFields.teacher = req.body.teacher;
-        if (req.body.phoneNumber !== undefined) updateFields.phone = req.body.phoneNumber;
-
-        const profile = await Profile.findOneAndUpdate(
-            { user: req.user._id, rollNumber },
-            { $set: updateFields },
+        const profile = await Profile.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    teacher: req.body.teacher
+                }
+            },
             { new: true }
         );
 
@@ -241,8 +237,34 @@ const updateProfile = async (req, res) => {
         }
 
         res.json(profile);
+
     } catch (error) {
-        console.error("UPDATE PROFILE ERROR:", error);
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+const deleteProfile = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const profile = await Profile.findOneAndDelete({
+            _id: id,
+            user: req.user._id
+        });
+
+        if (!profile) {
+            return res.status(404).json({
+                message: "Profile not found"
+            });
+        }
+
+        res.json({
+            message: "Profile deleted successfully"
+        });
+
+    } catch (error) {
         res.status(500).json({
             message: error.message
         });
@@ -255,5 +277,6 @@ module.exports = {
     getProfile,
     createProfile,
     getUserProfile,
-    updateProfile
+    updateProfile,
+    deleteProfile
 };

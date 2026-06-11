@@ -6,7 +6,8 @@ const {
     getProfile,
     createProfile,
     getUserProfile,
-    updateProfile
+    updateProfile,
+    deleteProfile
 } = require("../controller/authcontroller");
 
 const protect = require("../middleware/authMiddleware");
@@ -20,9 +21,12 @@ router.post("/login", loginUser);
 // PROFILE ROUTES (PROTECTED)
 router.post("/profile", protect, createProfile);
 router.get("/profile", protect, getUserProfile);
-router.put("/profile/:id", protect, updateProfile);
+router.put("/profile/:id", updateProfile);
 
 // OPTIONAL: USER BASIC PROFILE
 router.get("/me", protect, getProfile);
+
+//delete profile 
+router.delete("/profile/:id", protect, deleteProfile);
 
 module.exports = router;
